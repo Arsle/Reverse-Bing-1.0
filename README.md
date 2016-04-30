@@ -1,2 +1,2 @@
-# Reverse-Bing-1.0
+# Reverse-Bing-1.1
 Simple Reverse Ip on Bing Janissaries.org - Arsle
