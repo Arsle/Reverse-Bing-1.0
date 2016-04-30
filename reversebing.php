@@ -2,7 +2,7 @@
 set_time_limit(0);
 error_reporting(0);
 
-print "|----------------Bing Searcher 1.0---------------------|\n";
+print "|----------------Bing Searcher 1.1---------------------|\n";
 print "|      _             _                    _            |\n";
 print "|     | |           (_)                  (_)           |\n";
 print "|     | | __ _ _ __  _ ___ ___  __ _ _ __ _  ___  ___  |\n";
@@ -32,7 +32,9 @@ Function IpCek($sitem)
         {
         $sitem = gethostbyname($sitem);
         }
+	
 	return $sitem;
+	
 }
 
 Function CurlCek($ip)
@@ -57,10 +59,13 @@ Function CurlCek($ip)
 
 Function Bol($veri)
 {
+	
 	$yaz=fopen("site.txt","a+");
-	$ayrac='@<div class="b_caption"><div class="b_attribution" u="(.*?)"><cite>(.*?)</cite>@si';
+	$ayrac='@<div class="b_caption" data-tag="" data-partnertag=""><div class="b_attribution" u=(.*?)><cite>(.*?)</cite>@si';
 	$sayi=preg_match_all($ayrac,$veri,$siteler);
+	
 	print "Siteler\n";
+	
 	foreach($siteler[2] as $site)
 	{
 		if(strstr($site,"http://"))
