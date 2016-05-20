@@ -61,7 +61,7 @@ Function Bol($veri)
 {
 	
 	$yaz=fopen("site.txt","a+");
-	$ayrac='@<div class="b_caption" data-tag="" data-partnertag=""><div class="b_attribution" u=(.*?)><cite>(.*?)</cite>@si';
+	$ayrac='@<div class="b_attribution" u="(.*?)"><cite>(.*?)</cite>@si';
 	$sayi=preg_match_all($ayrac,$veri,$siteler);
 	
 	print "Siteler\n";
