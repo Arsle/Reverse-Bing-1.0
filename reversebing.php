@@ -1,6 +1,8 @@
-<?php 
+<?php
 set_time_limit(0);
 error_reporting(0);
+ini_set("default_socket_timeout",5);
+
 
 print "|----------------Bing Searcher 1.1---------------------|\n";
 print "|      _             _                    _            |\n";
@@ -18,11 +20,12 @@ print "|         /_/    \\_\\_|  |___/_|\\___|                   |\n";
 print "|------------------------------------------------------|\n";
 print "\n";
 
+$sitem = $argv[1];
 
-
-Function IpCek($sitem)
+if (isset($sitem) and isset($argv[2]))
 {
-	if (strstr($sitem, "http"))
+
+    if (strstr($sitem, "http"))
         {
         $sitem = parse_url($sitem);
         $sitem = $sitem["host"];
@@ -32,76 +35,56 @@ Function IpCek($sitem)
         {
         $sitem = gethostbyname($sitem);
         }
-	
-	return $sitem;
-	
-}
-
-Function CurlCek($ip)
-{
-	for($i=0;$i<100;$i++){
-	$link="http://www.bing.com/search?q=ip:$ip&first=$i";
-	$bot='Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)';
 
 
-	$ch=curl_init();
-	curl_setopt($ch,CURLOPT_URL,$link);
-	curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
-	curl_setopt($ch,CURLOPT_REFERER,"http://www.bing.com/");
-	curl_setopt($ch,CURLOPT_FOLLOWLOCATION,true);
-	curl_setopt($ch,CURLOPT_USERAGENT,$bot);
-	
-	$yaz=curl_exec($ch);
-	
-	return $yaz;
-	}
-}
 
-Function Bol($veri)
-{
-	
-	$yaz=fopen("site.txt","a+");
-	$ayrac='@<div class="b_attribution" u="(.*?)"><cite>(.*?)</cite>@si';
-	$sayi=preg_match_all($ayrac,$veri,$siteler);
-	
-	print "Siteler\n";
-	
-	foreach($siteler[2] as $site)
-	{
-		if(strstr($site,"http://"))
-		{
-		print strip_tags($site)."<br>";
-		}
-		else
-		{
-			$bol=parse_url("http://".strip_tags($site));
-						if (!strstr($toplamsite,$bol['host']))
+
+
+
+    
+
+    // Bing Verileri Çekiliyor ....
+
+
+        for ($b=1;$b<100;$b++)
+        {
+
+        
+        $url = 'http://www.bing.com/search?q=ip%3a'.$sitem.'&first='.$b;
+        $cr = curl_init();
+        curl_setopt($cr, CURLOPT_URL, $url);
+        curl_setopt($cr, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($cr, CURLOPT_COOKIEJAR, "cookie.txt");
+        curl_setopt($cr, CURLOPT_COOKIEFILE, "cookie.txt");
+        curl_setopt($cr, CURLOPT_FOLLOWLOCATION, 1);
+        $cal = curl_exec($cr);
+        curl_close($cr);
+		
+        $say = preg_match_all('@<div class="b_attribution" u="(.*?)"><cite>(.*?)</cite>@si',$cal,$ycal);
+		
+            for ($i=0;$i<$say;$i++)
+            {
+                if (!strstr($ycal[2][$i],"http://"))
+                {
+                    $bol = parse_url($ycal[2][$i]);
+					
+                    if (@!strstr($boltoplam,strip_tags($bol['path'])))
                         {
-                        $boltoplam = $boltoplam."http://".$bol['host'];
-                        print "http://".$bol['host']."\r\n";
-                        fwrite($yaz,"http://".$bol['host']."\n");
+						$yazb = fopen($argv[2], "a+");
+                        @($boltoplam = $boltoplam."http://".strip_tags($bol['path']));
+                        print "http://".strip_tags($bol['path'])."\r\n";
+                        fwrite($yazb,"http://".strip_tags($bol['path'])."\r\n");
+						 fclose($yazb);
                         }
-		}
-	}
-	print "-------------------------------\n";
-	print "Site.txt olarak kaydedilmistir.";
-	fclose($yaz);
-	
-}
+                }
+            }
 
-if(isset($argv[1]))
-{
-$site=$argv[1];
-$ipadres=IpCek($site);
-$baglan=CurlCek($ipadres);
-Bol($baglan);
-}
+
+        }
+   
+    }
 else
-{
-	print "Kullanim:php $argv[0] http://wwww.siteismi.com";
-}
-
-
-
-
+    {
+    echo 'php bing.php http://arsle.org sitelistesi.txt';
+    }
 ?>
